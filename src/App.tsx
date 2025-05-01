@@ -1,10 +1,16 @@
-import { InterFaceProducts } from "./components/Products/interFace";
+import { CartItemProps } from "./components/CarItems/interFace";
 import { useEffect, useState } from "react";
 import Products from "./components/Products/Products";
-
+import CartItems from "./components/CarItems/cartItems";
+import { InterFaceProducts } from "./components/Products/interFace";
+const initCartItems = localStorage.getItem("cartItems");
 const App = () => {
   const [product, setProducts] = useState<InterFaceProducts[]>([]);
   const [isLoding, setIsLodeing] = useState(false);
+  const [cartItems, setCartItems]: [
+    cartItems: CartItemProps[],
+    setCartItems: React.Dispatch<React.SetStateAction<CartItemProps[]>>
+  ] = useState<CartItemProps[]>(initCartItems ? JSON.parse(initCartItems) : []);
   const sampleProducts: InterFaceProducts[] = [
     {
       id: 1,
@@ -43,10 +49,16 @@ const App = () => {
     };
     getData();
   });
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
   return (
     <>
       {isLoding && <p>Loding...</p>}
-      {!isLoding && product && <Products products={sampleProducts} />}
+      {!isLoding && product && (
+        <Products products={sampleProducts} setCartItems={setCartItems} />
+      )}
+      <CartItems cartItems={cartItems} />
     </>
   );
 };
